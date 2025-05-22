@@ -1,0 +1,57 @@
+name: Build and Release ExpPlus
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.4'
+
+      - name: Set up Python venv
+        run: |
+          python -m venv venv
+          venv\Scripts\activate
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build exe with PyInstaller
+        run: |
+          venv\Scripts\activate
+          pyinstaller --noconfirm --onefile --windowed --name ExpPlus -F main.py --add-data "venv\Lib\site-packages\onnxruntime\capi\onnxruntime_providers_shared.dll;./onnxruntime/capi" --add-data "venv\Lib\site-packages\ddddocr\common.onnx;./ddddocr" --add-data "venv\Lib\site-packages\ddddocr\common_old.onnx;./ddddocr"
+
+      - name: Prepare release directory
+        run: |
+          mkdir ExpPlus
+          move dist\ExpPlus.exe ExpPlus\ExpPlus.exe
+
+      - name: Zip release
+        run: |
+          $tag = echo ${{ github.ref }} | % { $_ -replace 'refs/tags/', '' }
+          $repo = "${{ github.event.repository.name }}"
+          $zipname = "${repo}_${tag}.zip"
+          Compress-Archive -Path ExpPlus -DestinationPath $zipname
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release
+          path: ${{ github.event.repository.name }}_*.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ github.event.repository.name }}_*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

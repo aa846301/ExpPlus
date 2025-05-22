@@ -1,0 +1,27 @@
+# PyInstaller
+dist/
+build/
+*.spec
+*.zip
+
+# Executables and logs
+*.exe
+*.log
+
+# Windows generated folders
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+
+# Screenshot images
+screenshots/
+
+# Output exports
+output/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
