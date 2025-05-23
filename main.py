@@ -219,6 +219,7 @@ class TimerApp(QWidget):
         # QMessageBox.information(self, "自動儲存成功", f"已自動儲存至：\n{export_path}")
         # 改為主視窗訊息顯示，不再彈窗
         self.info_label.setText(f"已自動儲存至：{export_path}")
+        self.results.clear()  # 寫入後清空，避免重複寫入
 
     def open_result_file(self):
         export_path = os.path.join(self.output_dir, "timer_results.txt")
