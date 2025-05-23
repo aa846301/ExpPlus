@@ -21,7 +21,15 @@
 
 Done!
 
+## 環境建構 (windows)
+Python Version = 3.12.4
+```
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
 
+```
 
 
 
